@@ -8,6 +8,7 @@ from collections import defaultdict
 from threading import Thread
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
+import time
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -208,10 +209,11 @@ class XiaomiGateway(object):
                 
         trycount = 5
         for _ in range(trycount):
-            time.sleep(1) 
             _LOGGER.info('Discovering Xiaomi Devices')
             if self._discover_devices():
+                time.sleep(1) 
                 break
+
 
     def _discover_devices(self):
 
