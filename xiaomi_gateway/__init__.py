@@ -207,7 +207,7 @@ class XiaomiGateway(object):
         
         _LOGGER.info('TEST resp %s',resp)
                 
-        trycount = 5
+        trycount = 10
         for _ in range(trycount):
             _LOGGER.info('Discovering Xiaomi Devices')
             if self._discover_devices():
@@ -218,11 +218,17 @@ class XiaomiGateway(object):
     def _discover_devices(self):
 
         cmd = '{"cmd" : "get_id_list"}' if int(self.proto[0:1]) == 1 else '{"cmd":"discovery"}'
-        resp = self._send_cmd(cmd, "get_id_list_ack") if int(self.proto[0:1]) == 1 \
-            else self._send_cmd(cmd, "discovery_rsp")
-        if resp is None or "token" not in resp or ("data" not in resp and "dev_list" not in resp):
-            _LOGGER.info('Returning false Discovering Xiaomi Devices again')
-            return False
+        self._send_cmd_test(cmd, "get_id_list_ack") if int(self.proto[0:1]) == 1 \
+            else self._send_cmd_test(cmd, "discovery_rsp")
+            
+        resp = self._receive_cmd_test(cmd, "get_id_list_ack") 
+        
+        while true:
+            _LOGGER.info('Need Another reply')
+            resp = self._receive_cmd_test(cmd, "get_id_list_ack") 
+            if resp is None or "token" not in resp or ("data" not in resp and "dev_list" not in resp):
+                break
+
         self.token = resp['token']
         sids = []
         if int(self.proto[0:1]) == 1:
@@ -297,12 +303,39 @@ class XiaomiGateway(object):
 
                 continue
         return True
-
+    
     def _send_cmd(self, cmd, rtn_cmd=None):
         try:
             self._socket.settimeout(10.0)
             _LOGGER.debug("_send_cmd >> %s", cmd.encode())
             self._socket.sendto(cmd.encode(), (self.ip_adress, self.port))
+            data, _ = self._socket.recvfrom(1024)
+        except socket.timeout:
+            _LOGGER.error("Cannot connect to Gateway")
+            return None
+        if data is None:
+            _LOGGER.error("No response from Gateway")
+            return None
+        resp = json.loads(data.decode())
+        _LOGGER.debug("_send_cmd resp << %s", resp)
+        if rtn_cmd is not None and resp['cmd'] != rtn_cmd:
+            _LOGGER.error("Non matching response. Expecting %s, but got %s", rtn_cmd, resp['cmd'])
+            return None
+        return resp
+    
+    
+    def _send_cmd_test(self, cmd, rtn_cmd=None):
+        try:
+            self._socket.settimeout(10.0)
+            _LOGGER.debug("_send_cmd >> %s", cmd.encode())
+            self._socket.sendto(cmd.encode(), (self.ip_adress, self.port))
+        except socket.timeout:
+            _LOGGER.error("Cannot connect to Gateway")
+            return None
+        return 
+    
+    def _receive_cmd_test(self, cmd, rtn_cmd=None):
+        try:
             data, _ = self._socket.recvfrom(1024)
         except socket.timeout:
             _LOGGER.error("Cannot connect to Gateway")
