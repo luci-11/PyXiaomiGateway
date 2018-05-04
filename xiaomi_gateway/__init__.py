@@ -58,7 +58,7 @@ class XiaomiGatewayDiscovery(object):
             try:
                 ip_address = socket.gethostbyname(host)
                 _LOGGER.info(
-                    'Xiaomi Gateway %s configured at IP %s:%s',
+                    'TEST: Xiaomi Gateway %s configured at IP %s:%s',
                     sid, ip_address, port)
 
                 self.gateways[ip_address] = XiaomiGateway(
