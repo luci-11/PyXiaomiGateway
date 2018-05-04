@@ -222,13 +222,15 @@ class XiaomiGateway(object):
             else self._send_cmd_test(cmd, "discovery_rsp")
             
         resp = self._receive_cmd_test(cmd, "get_id_list_ack") 
+        _LOGGER.info('First reply >> this reply is : %s',resp)
         
         while True:
-            _LOGGER.info('Need Another reply')
-            resp = self._receive_cmd_test(cmd, "get_id_list_ack") 
             if resp is None or "token" not in resp or ("data" not in resp and "dev_list" not in resp):
                 break
+            _LOGGER.info('Need another reply >> this reply is : %s',resp)
+            resp = self._receive_cmd_test(cmd, "get_id_list_ack") 
 
+        _LOGGER.info('Correct reply >> this reply is : %s',resp)
         self.token = resp['token']
         sids = []
         if int(self.proto[0:1]) == 1:
