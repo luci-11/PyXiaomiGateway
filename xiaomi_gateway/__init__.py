@@ -292,7 +292,8 @@ class XiaomiGateway(object):
         for sid in sids:
             _LOGGER.info('TEST Found %s', sid)
         
-
+        counter=0
+        
         device_types = {
             'sensor': ['sensor_ht', 'gateway', 'gateway.v3', 'weather',
                        'weather.v1', 'sensor_motion.aq2', 'acpartner.v3'],
@@ -325,13 +326,11 @@ class XiaomiGateway(object):
                     _LOGGER.info('Need another reply >> this reply is : %s',resp)
                     resp = self._receive_cmd_test(cmd, "read_ack")
                 else:
-                    break
-
-            sid2 = resp["sid"]
-            
-            if sid2 != sid :
-                _LOGGER.error("Not for this device, keep searching")
-                continue
+                    if "sid" in resp and resp["sid"] != sid:
+                        _LOGGER.error("Not for this device, keep searching. Sid %s found %s",sid,resp["sid"])
+                         resp = self._receive_cmd_test(cmd, "read_ack")
+                    else:
+                        break
 
             if not _validate_data(resp):
                 _LOGGER.error("Not a valid device. Check the mac adress and update the firmware.")
