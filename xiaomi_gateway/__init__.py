@@ -208,6 +208,7 @@ class XiaomiGateway(object):
                 
         trycount = 5
         for _ in range(trycount):
+            time.sleep(1) 
             _LOGGER.info('Discovering Xiaomi Devices')
             if self._discover_devices():
                 break
@@ -218,6 +219,7 @@ class XiaomiGateway(object):
         resp = self._send_cmd(cmd, "get_id_list_ack") if int(self.proto[0:1]) == 1 \
             else self._send_cmd(cmd, "discovery_rsp")
         if resp is None or "token" not in resp or ("data" not in resp and "dev_list" not in resp):
+            _LOGGER.info('Returning false Discovering Xiaomi Devices again')
             return False
         self.token = resp['token']
         sids = []
