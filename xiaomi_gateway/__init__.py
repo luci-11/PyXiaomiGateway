@@ -201,10 +201,10 @@ class XiaomiGateway(object):
         if proto is None:
             cmd = '{"cmd":"read","sid":"' + sid + '"}'
             resp = self._send_cmd(cmd)
-            _LOGGER.info('TEST Print resp %s',resp)
-            if "read_ack" in resp:
-                proto = _get_value(resp, "proto_version") if _validate_data(resp) else None
-                self.proto = '1.0' if proto is None else proto
+            proto = _get_value(resp, "proto_version") if _validate_data(resp) else None
+        self.proto = '1.0' if proto is None else proto
+        
+        _LOGGER.info('TEST resp %s',resp)
                 
         trycount = 5
         for _ in range(trycount):
@@ -231,7 +231,7 @@ class XiaomiGateway(object):
         _LOGGER.info('Found %s devices', len(sids))
         
         for sid in sids:
-            _LOGGER.info('Found %s', sid)
+            _LOGGER.info('TEST Found %s', sid)
         
 
         device_types = {
