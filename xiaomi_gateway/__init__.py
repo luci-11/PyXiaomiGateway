@@ -270,11 +270,23 @@ class XiaomiGateway(object):
 
         for sid in sids:
             cmd = '{"cmd":"read","sid":"' + sid + '"}'
-            resp = self._send_cmd(cmd, "read_ack") if int(self.proto[0:1]) == 1 else self._send_cmd(cmd, "read_rsp")
-            if not _validate_data(resp):
-                _LOGGER.error("Not a valid device. Check the mac adress and update the firmware.")
-                continue
+            self._send_cmd(cmd, "read_ack") if int(self.proto[0:1]) == 1 else self._send_cmd(cmd, "read_rsp")
+            resp = self._receive_cmd_test(cmd, "read_ack")
+            _LOGGER.info('First reply >> this reply is : %s',resp)
+            
+            while True:
+                if resp is None or "model" not in resp:
+                    _LOGGER.info('Need another reply >> this reply is : %s',resp)
+                    resp = self._receive_cmd_test(cmd, "read_ack")
+                else:
+                    break
 
+            _LOGGER.info('Correct reply >> this reply is : %s',resp)
+            if not _validate_data(resp):
+               _LOGGER.error("Not a valid device. Check the mac adress and update the firmware.")
+               continue
+              
+            
             model = resp["model"]
             supported = False
 
