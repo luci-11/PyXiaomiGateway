@@ -228,7 +228,7 @@ class XiaomiGateway(object):
             'light': ['gateway', 'gateway.v3'],
             'cover': ['curtain']}
         
-        if resp is None or "model" not in resp or :
+        if resp is None or "model" not in resp:
             _LOGGER.info('This reply was not useful : %s',resp)
         else:
             _LOGGER.info('This reply contains info >> this reply is : %s',resp)
