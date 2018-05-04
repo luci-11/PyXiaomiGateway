@@ -205,8 +205,53 @@ class XiaomiGateway(object):
             proto = _get_value(resp, "proto_version") if _validate_data(resp) else None
         self.proto = '1.0' if proto is None else proto
         
-        _LOGGER.info('TEST resp %s',resp)
-        _first_register_device(self,resp):
+        _LOGGER.info('TEST resp %s',resp)           
+    
+        device_types = {
+            'sensor': ['sensor_ht', 'gateway', 'gateway.v3', 'weather',
+                       'weather.v1', 'sensor_motion.aq2', 'acpartner.v3'],
+            'binary_sensor': ['magnet', 'sensor_magnet', 'sensor_magnet.aq2',
+                              'motion', 'sensor_motion', 'sensor_motion.aq2',
+                              'switch', 'sensor_switch', 'sensor_switch.aq2', 'sensor_switch.aq3',
+                              '86sw1', 'sensor_86sw1.aq1',
+                              '86sw2', 'sensor_86sw2.aq1',
+                              'cube', 'sensor_cube',
+                              'smoke', 'sensor_smoke',
+                              'natgas', 'sensor_natgas',
+                              'sensor_wleak.aq1'],
+            'switch': ['plug',
+                       'ctrl_neutral1', 'ctrl_neutral1.aq1',
+                       'ctrl_neutral2', 'ctrl_neutral2.aq1',
+                       'ctrl_ln1', 'ctrl_ln1.aq1',
+                       'ctrl_ln2', 'ctrl_ln2.aq1',
+                       '86plug', 'ctrl_86plug', 'ctrl_86plug.aq1'],
+            'light': ['gateway', 'gateway.v3'],
+            'cover': ['curtain']}
+
+        if resp is None or "model" not in resp:
+            continue
+        else:
+            _LOGGER.info('This reply contains info >> this reply is : %s',resp)
+            if not _validate_data(resp):
+               _LOGGER.error("Not a valid device. Check the mac adress and update the firmware.")
+               return
+                         
+            model = resp["model"]
+            supported = False
+
+            for device_type in device_types:
+                if model in device_types[device_type]:
+                    supported = True
+                    xiaomi_device = {
+                        "model": model,
+                        "proto": self.proto,
+                        "sid": resp["sid"],
+                        "short_id": resp["short_id"] if "short_id" in resp else 0,
+                        "data": _list2map(_get_value(resp)),
+                        "raw_data": resp}
+                    self.devices[device_type].append(xiaomi_device)
+                    _LOGGER.debug('Registering device %s, %s as: %s', sid, model, device_type)                     
+            
                 
         trycount = 10
         for _ in range(trycount):
@@ -319,57 +364,7 @@ class XiaomiGateway(object):
 
                 continue
         return True
-    
-    
-    
-    
-    def _first_register_device(self,resp):
-        device_types = {
-            'sensor': ['sensor_ht', 'gateway', 'gateway.v3', 'weather',
-                       'weather.v1', 'sensor_motion.aq2', 'acpartner.v3'],
-            'binary_sensor': ['magnet', 'sensor_magnet', 'sensor_magnet.aq2',
-                              'motion', 'sensor_motion', 'sensor_motion.aq2',
-                              'switch', 'sensor_switch', 'sensor_switch.aq2', 'sensor_switch.aq3',
-                              '86sw1', 'sensor_86sw1.aq1',
-                              '86sw2', 'sensor_86sw2.aq1',
-                              'cube', 'sensor_cube',
-                              'smoke', 'sensor_smoke',
-                              'natgas', 'sensor_natgas',
-                              'sensor_wleak.aq1'],
-            'switch': ['plug',
-                       'ctrl_neutral1', 'ctrl_neutral1.aq1',
-                       'ctrl_neutral2', 'ctrl_neutral2.aq1',
-                       'ctrl_ln1', 'ctrl_ln1.aq1',
-                       'ctrl_ln2', 'ctrl_ln2.aq1',
-                       '86plug', 'ctrl_86plug', 'ctrl_86plug.aq1'],
-            'light': ['gateway', 'gateway.v3'],
-            'cover': ['curtain']}
-
-        if resp is None or "model" not in resp:
-            return
-        else:
-            _LOGGER.info('This reply contains info >> this reply is : %s',resp)
-            if not _validate_data(resp):
-               _LOGGER.error("Not a valid device. Check the mac adress and update the firmware.")
-               return
-                         
-            model = resp["model"]
-            supported = False
-
-            for device_type in device_types:
-                if model in device_types[device_type]:
-                    supported = True
-                    xiaomi_device = {
-                        "model": model,
-                        "proto": self.proto,
-                        "sid": resp["sid"],
-                        "short_id": resp["short_id"] if "short_id" in resp else 0,
-                        "data": _list2map(_get_value(resp)),
-                        "raw_data": resp}
-                    self.devices[device_type].append(xiaomi_device)
-                    _LOGGER.debug('Registering device %s, %s as: %s', sid, model, device_type)
-        return True
-        
+      
         
     
     def _send_cmd(self, cmd, rtn_cmd=None):
