@@ -201,14 +201,14 @@ class XiaomiGateway(object):
         if proto is None:
             cmd = '{"cmd":"read","sid":"' + sid + '"}'
             resp = self._send_cmd(cmd)
-            proto = _get_value(resp, "proto_version") if _validate_data(resp) else None
-        self.proto = '1.0' if proto is None else proto
-
-        trycount = 5
-        for _ in range(trycount):
-            _LOGGER.info('Discovering Xiaomi Devices')
-            if self._discover_devices():
-                break
+            if "read_ack" in resp:
+                proto = _get_value(resp, "proto_version") if _validate_data(resp) else None
+                self.proto = '1.0' if proto is None else proto
+                trycount = 5
+                for _ in range(trycount):
+                    _LOGGER.info('Discovering Xiaomi Devices')
+                    if self._discover_devices():
+                        break
 
     def _discover_devices(self):
 
@@ -227,6 +227,10 @@ class XiaomiGateway(object):
         sids.append(self.sid)
 
         _LOGGER.info('Found %s devices', len(sids))
+        
+        for sid in sids:
+            _LOGGER.info('Found %s', sid)
+        
 
         device_types = {
             'sensor': ['sensor_ht', 'gateway', 'gateway.v3', 'weather',
