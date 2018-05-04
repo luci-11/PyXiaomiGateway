@@ -11,7 +11,7 @@ from cryptography.hazmat.backends import default_backend
 
 _LOGGER = logging.getLogger(__name__)
 
-GATEWAY_MODELS = ['gateway', 'gateway.v3', 'acpartner.v3']
+GATEWAY_MODELS = ['gateway', 'gateway.v3', 'lumi.gateway.v3', 'acpartner.v3']
 
 
 class XiaomiGatewayDiscovery(object):
