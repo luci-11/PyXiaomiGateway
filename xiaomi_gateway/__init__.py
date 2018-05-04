@@ -229,7 +229,7 @@ class XiaomiGateway(object):
             'cover': ['curtain']}
 
         if resp is None or "model" not in resp:
-            continue
+            _LOGGER.info('This reply was not useful : %s',resp)
         else:
             _LOGGER.info('This reply contains info >> this reply is : %s',resp)
             if not _validate_data(resp):
