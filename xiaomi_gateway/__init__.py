@@ -226,9 +226,10 @@ class XiaomiGateway(object):
         
         while True:
             if resp is None or "token" not in resp or ("data" not in resp and "dev_list" not in resp):
+                _LOGGER.info('Need another reply >> this reply is : %s',resp)
+                resp = self._receive_cmd_test(cmd, "get_id_list_ack") 
+            else
                 break
-            _LOGGER.info('Need another reply >> this reply is : %s',resp)
-            resp = self._receive_cmd_test(cmd, "get_id_list_ack") 
 
         _LOGGER.info('Correct reply >> this reply is : %s',resp)
         self.token = resp['token']
