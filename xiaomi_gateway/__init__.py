@@ -227,8 +227,8 @@ class XiaomiGateway(object):
                        '86plug', 'ctrl_86plug', 'ctrl_86plug.aq1'],
             'light': ['gateway', 'gateway.v3'],
             'cover': ['curtain']}
-
-        if resp is None or "model" not in resp:
+        
+        if resp is None or "model" not in resp or :
             _LOGGER.info('This reply was not useful : %s',resp)
         else:
             _LOGGER.info('This reply contains info >> this reply is : %s',resp)
@@ -321,18 +321,23 @@ class XiaomiGateway(object):
             _LOGGER.info('First reply >> this reply is : %s',resp)
             
             while True:
-                if resp is None or "model" not in resp:
+                if resp is None or "model" not in resp or "sid" not in resp:
                     _LOGGER.info('Need another reply >> this reply is : %s',resp)
                     resp = self._receive_cmd_test(cmd, "read_ack")
                 else:
                     break
 
-            _LOGGER.info('Correct reply >> this reply is : %s',resp)
-            if not _validate_data(resp):
-               _LOGGER.error("Not a valid device. Check the mac adress and update the firmware.")
-               continue
-              
+            sid2 = resp["sid"]
             
+            if sid2 != sid :
+                _LOGGER.error("Not for this device, keep searching")
+                continue
+
+            if not _validate_data(resp):
+                _LOGGER.error("Not a valid device. Check the mac adress and update the firmware.")
+                continue
+              
+            _LOGGER.info('Correct reply >> this reply is : %s',resp)
             model = resp["model"]
             supported = False
 
