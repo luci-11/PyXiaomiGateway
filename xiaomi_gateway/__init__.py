@@ -368,7 +368,7 @@ class XiaomiGateway(object):
                         "raw_data": resp}
                     self.devices[device_type].append(xiaomi_device)
                     _LOGGER.debug('Registering device %s, %s as: %s', sid, model, device_type)
-        return
+        return True
         
         
     
