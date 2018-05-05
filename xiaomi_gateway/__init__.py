@@ -203,9 +203,10 @@ class XiaomiGateway(object):
             cmd = '{"cmd":"read","sid":"' + sid + '"}'
             resp = self._send_cmd(cmd)
             proto = _get_value(resp, "proto_version") if _validate_data(resp) else None
+            _LOGGER.info('TEST resp %s',resp)     
         self.proto = '1.0' if proto is None else proto
         
-        _LOGGER.info('TEST resp %s',resp)           
+             
     
         device_types = {
             'sensor': ['sensor_ht', 'gateway', 'gateway.v3', 'weather',
