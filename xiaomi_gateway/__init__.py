@@ -13,6 +13,8 @@ import time
 _LOGGER = logging.getLogger(__name__)
 
 GATEWAY_MODELS = ['gateway', 'gateway.v3', 'lumi.gateway.v3', 'acpartner.v3']
+registered_sids = defaultdict(list)
+
 
 
 class XiaomiGatewayDiscovery(object):
@@ -23,7 +25,6 @@ class XiaomiGatewayDiscovery(object):
     SOCKET_BUFSIZE = 1024
 
     gateways = defaultdict(list)
-    registered_sids = defaultdict(list)
 
     def __init__(self, callback_func, gateways_config, interface):
 
