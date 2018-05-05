@@ -13,7 +13,7 @@ import time
 _LOGGER = logging.getLogger(__name__)
 
 GATEWAY_MODELS = ['gateway', 'gateway.v3', 'lumi.gateway.v3', 'acpartner.v3']
-registered_sids = defaultdict(str)
+registered_sids = ['']
 
 
 
@@ -255,7 +255,7 @@ class XiaomiGateway(object):
                     if  resp["sid"] not in registered_sids: 
                         self.devices[device_type].append(xiaomi_device)
                         _LOGGER.debug('Registering device %s, %s as: %s', sid, model, device_type)
-                        registered_sids.append(resp["sid"])
+                        registered_sids.append(sid)
                     else:
                         _LOGGER.debug('Already Registered device %s, %s as: %s', sid, model, device_type)                
             
