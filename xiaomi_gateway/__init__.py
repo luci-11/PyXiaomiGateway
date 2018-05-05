@@ -23,6 +23,7 @@ class XiaomiGatewayDiscovery(object):
     SOCKET_BUFSIZE = 1024
 
     gateways = defaultdict(list)
+    registered_sids = defaultdict(list)
 
     def __init__(self, callback_func, gateways_config, interface):
 
@@ -250,6 +251,12 @@ class XiaomiGateway(object):
                         "short_id": resp["short_id"] if "short_id" in resp else 0,
                         "data": _list2map(_get_value(resp)),
                         "raw_data": resp}
+                    if  resp["sid"] not in registered_sids: 
+                        self.devices[device_type].append(xiaomi_device)
+                        _LOGGER.debug('Registering device %s, %s as: %s', sid, model, device_type)
+                        self.registered_sids.append(resp["sid"])
+                    else:
+                        _LOGGER.debug('Already Registered device %s, %s as: %s', sid, model, device_type)
                     self.devices[device_type].append(xiaomi_device)
                     _LOGGER.debug('Registering device %s, %s as: %s', sid, model, device_type)                     
             
@@ -351,8 +358,12 @@ class XiaomiGateway(object):
                         "short_id": resp["short_id"] if "short_id" in resp else 0,
                         "data": _list2map(_get_value(resp)),
                         "raw_data": resp}
-                    self.devices[device_type].append(xiaomi_device)
-                    _LOGGER.debug('Registering device %s, %s as: %s', sid, model, device_type)
+                    if  resp["sid"] not in registered_sids: 
+                        self.devices[device_type].append(xiaomi_device)
+                        _LOGGER.debug('Registering device %s, %s as: %s', sid, model, device_type)
+                        self.registered_sids.append(resp["sid"])
+                    else:
+                        _LOGGER.debug('Already Registered device %s, %s as: %s', sid, model, device_type)
 
             if not supported:
                 if model:
