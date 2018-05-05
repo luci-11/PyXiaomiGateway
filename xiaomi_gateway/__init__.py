@@ -13,7 +13,7 @@ import time
 _LOGGER = logging.getLogger(__name__)
 
 GATEWAY_MODELS = ['gateway', 'gateway.v3', 'lumi.gateway.v3', 'acpartner.v3']
-registered_sids = defaultdict(list)
+registered_sids = defaultdict(str)
 
 
 
