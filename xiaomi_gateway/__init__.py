@@ -255,11 +255,9 @@ class XiaomiGateway(object):
                     if  resp["sid"] not in registered_sids: 
                         self.devices[device_type].append(xiaomi_device)
                         _LOGGER.debug('Registering device %s, %s as: %s', sid, model, device_type)
-                        self.registered_sids.append(resp["sid"])
+                        registered_sids.append(resp["sid"])
                     else:
-                        _LOGGER.debug('Already Registered device %s, %s as: %s', sid, model, device_type)
-                    self.devices[device_type].append(xiaomi_device)
-                    _LOGGER.debug('Registering device %s, %s as: %s', sid, model, device_type)                     
+                        _LOGGER.debug('Already Registered device %s, %s as: %s', sid, model, device_type)                
             
                 
         trycount = 10
@@ -362,7 +360,7 @@ class XiaomiGateway(object):
                     if  resp["sid"] not in registered_sids: 
                         self.devices[device_type].append(xiaomi_device)
                         _LOGGER.debug('Registering device %s, %s as: %s', sid, model, device_type)
-                        self.registered_sids.append(resp["sid"])
+                        registered_sids.append(resp["sid"])
                     else:
                         _LOGGER.debug('Already Registered device %s, %s as: %s', sid, model, device_type)
 
