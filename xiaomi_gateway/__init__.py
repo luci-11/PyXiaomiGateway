@@ -271,10 +271,14 @@ class XiaomiGateway(object):
     def _discover_devices(self):
 
         cmd = '{"cmd" : "get_id_list"}' if int(self.proto[0:1]) == 1 else '{"cmd":"discovery"}'
-        self._send_cmd_test(cmd, "get_id_list_ack") if int(self.proto[0:1]) == 1 \
-            else self._send_cmd_test(cmd, "discovery_rsp")
+        """self._send_cmd_test(cmd, "get_id_list_ack") if int(self.proto[0:1]) == 1 \
+            else self._send_cmd_test(cmd, "discovery_rsp")"""
+        """resp = self._receive_cmd_test(cmd, "get_id_list_ack")""" 
             
-        resp = self._receive_cmd_test(cmd, "get_id_list_ack") 
+        resp = self._send_cmd(cmd, "get_id_list_ack") if int(self.proto[0:1]) == 1 \
+            else self._send_cmd(cmd, "discovery_rsp")
+            
+
         _LOGGER.info('First reply >> this reply is : %s',resp)
         
         while True:
@@ -324,8 +328,9 @@ class XiaomiGateway(object):
 
         for sid in sids:
             cmd = '{"cmd":"read","sid":"' + sid + '"}'
-            self._send_cmd(cmd, "read_ack") if int(self.proto[0:1]) == 1 else self._send_cmd(cmd, "read_rsp")
-            resp = self._receive_cmd_test(cmd, "read_ack")
+            
+            resp = self._send_cmd(cmd, "read_ack") if int(self.proto[0:1]) == 1 else self._send_cmd(cmd, "read_rsp")
+            """resp = self._receive_cmd_test(cmd, "read_ack")"""
             _LOGGER.info('First reply >> this reply is : %s',resp)
             
             while True:
@@ -400,17 +405,6 @@ class XiaomiGateway(object):
             _LOGGER.error("Non matching response. Expecting %s, but got %s", rtn_cmd, resp['cmd'])
             return None
         return resp
-    
-    
-    def _send_cmd_test(self, cmd, rtn_cmd=None):
-        try:
-            self._socket.settimeout(10.0)
-            _LOGGER.debug("_send_cmd >> %s", cmd.encode())
-            self._socket.sendto(cmd.encode(), (self.ip_adress, self.port))
-        except socket.timeout:
-            _LOGGER.error("Cannot connect to Gateway")
-            return None
-        return 
     
     def _receive_cmd_test(self, cmd, rtn_cmd=None):
         try:
