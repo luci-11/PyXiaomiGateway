@@ -362,7 +362,7 @@ class XiaomiGateway(object):
                         _LOGGER.debug('Registering device %s, %s as: %s', sid, model, device_type)
                         registered_sids.append(model+resp["sid"])
                     else:
-                        _LOGGER.debug('Already Registered device %s, %s as: %s', sid, model, device_type)
+                        _LOGGER.debug('Already Registered device %s - %s as: %s', model, sid, device_type)
 
             if not supported:
                 if model:
