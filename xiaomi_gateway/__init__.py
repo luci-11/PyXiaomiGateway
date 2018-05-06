@@ -252,10 +252,10 @@ class XiaomiGateway(object):
                         "short_id": resp["short_id"] if "short_id" in resp else 0,
                         "data": _list2map(_get_value(resp)),
                         "raw_data": resp}
-                    if  resp["sid"] not in registered_sids: 
+                    if  model+resp["sid"] not in registered_sids: 
                         self.devices[device_type].append(xiaomi_device)
                         _LOGGER.debug('Registering device %s, %s as: %s', sid, model, device_type)
-                        registered_sids.append(sid)
+                        registered_sids.append(model+sid)
                     else:
                         _LOGGER.debug('Already Registered device %s, %s as: %s', sid, model, device_type)                
             
@@ -357,10 +357,10 @@ class XiaomiGateway(object):
                         "short_id": resp["short_id"] if "short_id" in resp else 0,
                         "data": _list2map(_get_value(resp)),
                         "raw_data": resp}
-                    if  resp["sid"] not in registered_sids: 
+                    if  model+resp["sid"] not in registered_sids: 
                         self.devices[device_type].append(xiaomi_device)
                         _LOGGER.debug('Registering device %s, %s as: %s', sid, model, device_type)
-                        registered_sids.append(resp["sid"])
+                        registered_sids.append(model+resp["sid"])
                     else:
                         _LOGGER.debug('Already Registered device %s, %s as: %s', sid, model, device_type)
 
