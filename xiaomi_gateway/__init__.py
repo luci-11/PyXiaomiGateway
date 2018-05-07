@@ -454,7 +454,25 @@ class XiaomiGateway(object):
             if resp is None or "data" not in resp:
                 _LOGGER.info('Need another reply >> this reply is : %s',resp)
                 resp = self._receive_cmd_test(json.dumps(cmd), "write_ack") 
-            else:
+            elif "Invalid key" in resp:
+                # If 'invalid key' message we ask for a new token
+                resp = self._send_cmd('{"cmd" : "get_id_list"}', "get_id_list_ack") if int(self.proto[0:1]) == 1 \
+                    else self._send_cmd('{"cmd" : "discovery"}', "discovery_rsp")
+                _LOGGER.debug("get_id_list << %s", resp)
+                if resp is None or "token" not in resp:
+                    _LOGGER.error('No new token from gateway. Can not send commands to the gateway.')
+                    return False
+                self.token = resp['token']
+                if int(self.proto[0:1]) == 1:
+                    data['key'] = self._get_key()
+                    cmd['data'] = data
+                else:
+                    cmd['key'] = self._get_key()
+                    cmd['params'] = [data]
+                resp = self._send_cmd(json.dumps(cmd), "write_ack") if int(self.proto[0:1]) == 1 \
+                    else self._send_cmd(json.dumps(cmd), "write_rsp")
+                _LOGGER.debug("write_ack << %s", resp)               
+            else:                
                 break
 
         _LOGGER.info('Correct reply >> this reply is : %s',resp)
@@ -463,26 +481,6 @@ class XiaomiGateway(object):
             return True
         if not _validate_keyerror(resp):
             return False
-
-        # If 'invalid key' message we ask for a new token
-        resp = self._send_cmd('{"cmd" : "get_id_list"}', "get_id_list_ack") if int(self.proto[0:1]) == 1 \
-            else self._send_cmd('{"cmd" : "discovery"}', "discovery_rsp")
-        _LOGGER.debug("get_id_list << %s", resp)
-
-        if resp is None or "token" not in resp:
-            _LOGGER.error('No new token from gateway. Can not send commands to the gateway.')
-            return False
-        self.token = resp['token']
-        if int(self.proto[0:1]) == 1:
-            data['key'] = self._get_key()
-            cmd['data'] = data
-        else:
-            cmd['key'] = self._get_key()
-            cmd['params'] = [data]
-        resp = self._send_cmd(json.dumps(cmd), "write_ack") if int(self.proto[0:1]) == 1 \
-            else self._send_cmd(json.dumps(cmd), "write_rsp")
-        _LOGGER.debug("write_ack << %s", resp)
-        return _validate_data(resp)
 
     def get_from_hub(self, sid):
         """Get data from gateway"""
