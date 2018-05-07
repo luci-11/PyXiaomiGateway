@@ -443,6 +443,7 @@ class XiaomiGateway(object):
         else:
             cmd['key'] = self._get_key()
             cmd['params'] = [data]
+            
         resp = self._send_cmd(json.dumps(cmd), "write_ack") if int(self.proto[0:1]) == 1 \
             else self._send_cmd(json.dumps(cmd), "write_rsp")
         _LOGGER.debug("write_ack << %s", resp)
@@ -450,16 +451,14 @@ class XiaomiGateway(object):
         _LOGGER.info('First reply >> this reply is : %s',resp)
         
         while True:
-            if resp is None or "token" not in resp or ("data" not in resp and "dev_list" not in resp):
+            if resp is None or "data" not in resp:
                 _LOGGER.info('Need another reply >> this reply is : %s',resp)
                 resp = self._receive_cmd_test(json.dumps(cmd), "write_ack") 
             else:
                 break
 
         _LOGGER.info('Correct reply >> this reply is : %s',resp)
-        
-        
-        
+              
         if _validate_data(resp):
             return True
         if not _validate_keyerror(resp):
