@@ -201,9 +201,9 @@ class XiaomiGateway(object):
         self.token = None
         self._socket = sock
 
+        cmd = '{"cmd":"read","sid":"' + sid + '"}'
+        resp = self._send_cmd(cmd)
         if proto is None:
-            cmd = '{"cmd":"read","sid":"' + sid + '"}'
-            resp = self._send_cmd(cmd)
             proto = _get_value(resp, "proto_version") if _validate_data(resp) else None
             _LOGGER.info('TEST reply %s', resp)     
         self.proto = '1.0' if proto is None else proto
