@@ -489,6 +489,20 @@ class XiaomiGateway(object):
         cmd = '{ "cmd":"read","sid":"' + sid + '"}'
         resp = self._send_cmd(cmd, "read_ack") if int(self.proto[0:1]) == 1 else self._send_cmd(cmd, "read_rsp")
         _LOGGER.debug("read_ack << %s", resp)
+        _LOGGER.info('First reply >> this reply is : %s',resp)
+            
+        while True:
+            if resp is None or "model" not in resp or "sid" not in resp:
+                _LOGGER.info('Need another reply >> this reply is : %s',resp)
+                resp = self._receive_cmd_test(cmd, "read_ack")
+            else:
+                if "sid" in resp and resp["sid"] != sid:
+                    _LOGGER.error("Not for this device, keep searching. Sid %s found %s",sid,resp["sid"])
+                    resp = self._receive_cmd_test(cmd, "read_ack")
+                else:
+                    break
+              
+        _LOGGER.info('Correct reply >> this reply is : %s',resp)
         return self.push_data(resp)
 
     def push_data(self, data):
