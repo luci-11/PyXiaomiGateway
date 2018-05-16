@@ -339,7 +339,7 @@ class XiaomiGateway(object):
                     resp = self._receive_cmd_test(cmd, "read_ack")
                 else:
                     if "sid" in resp and resp["sid"] != sid:
-                        _LOGGER.error("Not for this device, keep searching. Sid %s found %s",sid,resp["sid"])
+                        _LOGGER.info("Not for this device, keep searching. Sid %s found %s",sid,resp["sid"])
                         resp = self._receive_cmd_test(cmd, "read_ack")
                     else:
                         break
@@ -497,7 +497,7 @@ class XiaomiGateway(object):
                 resp = self._receive_cmd_test(cmd, "read_ack")
             else:
                 if "sid" in resp and resp["sid"] != sid:
-                    _LOGGER.error("Not for this device, keep searching. Sid %s found %s",sid,resp["sid"])
+                    _LOGGER.info("Not for this device, keep searching. Sid %s found %s",sid,resp["sid"])
                     resp = self._receive_cmd_test(cmd, "read_ack")
                 else:
                     break
