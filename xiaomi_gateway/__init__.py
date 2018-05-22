@@ -201,15 +201,28 @@ class XiaomiGateway(object):
         self.token = None
         self._socket = sock
 
+        cmd = '{"cmd":"read","sid":"' + sid + '"}'
+        resp = self._send_cmd(cmd)
+        _LOGGER.info('TEST reply %s', resp)
+        
+        _LOGGER.info('First reply >> this reply is : %s',resp)
+        while True:
+            if resp is None or "model" not in resp or "sid" not in resp:
+                _LOGGER.info('Need another reply >> this reply is : %s',resp)
+                resp = self._receive_cmd_test(cmd, "read_ack")
+            else:
+                if "sid" in resp and resp["sid"] != sid:
+                    _LOGGER.info("Not for this device, keep searching. Sid %s found %s",sid,resp["sid"])
+                    resp = self._receive_cmd_test(cmd, "read_ack")
+                else:
+                    break
+        
         if proto is None:
-            cmd = '{"cmd":"read","sid":"' + sid + '"}'
-            resp = self._send_cmd(cmd)
             proto = _get_value(resp, "proto_version") if _validate_data(resp) else None
-            _LOGGER.info('TEST reply %s', resp)     
+
         self.proto = '1.0' if proto is None else proto
         
-             
-    
+           
         device_types = {
             'sensor': ['sensor_ht', 'gateway', 'gateway.v3', 'weather',
                        'weather.v1', 'sensor_motion.aq2', 'acpartner.v3'],
