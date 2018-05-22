@@ -206,7 +206,8 @@ class XiaomiGateway(object):
         _LOGGER.info('TEST reply %s', resp)
         
         _LOGGER.info('First reply >> this reply is : %s',resp)
-        while True:
+        
+        for count in range(1,11):
             if resp is None or "model" not in resp or "sid" not in resp:
                 _LOGGER.info('Need another reply >> this reply is : %s',resp)
                 resp = self._receive_cmd_test(cmd, "read_ack")
@@ -294,7 +295,7 @@ class XiaomiGateway(object):
 
         _LOGGER.info('First reply >> this reply is : %s',resp)
         
-        while True:
+        for count in range(1,11):
             if resp is None or "token" not in resp or ("data" not in resp and "dev_list" not in resp):
                 _LOGGER.info('Need another reply >> this reply is : %s',resp)
                 resp = self._receive_cmd_test(cmd, "get_id_list_ack") 
@@ -346,7 +347,7 @@ class XiaomiGateway(object):
             """resp = self._receive_cmd_test(cmd, "read_ack")"""
             _LOGGER.info('First reply >> this reply is : %s',resp)
             
-            while True:
+            for count in range(1,11):
                 if resp is None or "model" not in resp or "sid" not in resp:
                     _LOGGER.info('Need another reply >> this reply is : %s',resp)
                     resp = self._receive_cmd_test(cmd, "read_ack")
@@ -463,7 +464,7 @@ class XiaomiGateway(object):
         
         _LOGGER.info('First reply >> this reply is : %s',resp)
         
-        while True:
+        for count in range(1,11):
             if resp is None or "data" not in resp:
                 _LOGGER.info('Need another reply >> this reply is : %s',resp)
                 resp = self._receive_cmd_test(json.dumps(cmd), "write_ack") 
@@ -504,7 +505,7 @@ class XiaomiGateway(object):
         _LOGGER.debug("read_ack << %s", resp)
         _LOGGER.info('First reply >> this reply is : %s',resp)
             
-        while True:
+        for count in range(1,11):
             if resp is None or "model" not in resp or "sid" not in resp:
                 _LOGGER.info('Need another reply >> this reply is : %s',resp)
                 resp = self._receive_cmd_test(cmd, "read_ack")
