@@ -416,7 +416,7 @@ class XiaomiGateway(object):
         resp = json.loads(data.decode())
         _LOGGER.debug("_send_cmd resp << %s", resp)
         if rtn_cmd is not None and resp['cmd'] != rtn_cmd:
-            _LOGGER.error("Non matching response. Expecting %s, but got %s", rtn_cmd, resp['cmd'])
+            _LOGGER.debug("Non matching response. Expecting %s, but got %s", rtn_cmd, resp['cmd'])
             return None
         return resp
     
@@ -432,7 +432,7 @@ class XiaomiGateway(object):
         resp = json.loads(data.decode())
         _LOGGER.debug("_send_cmd resp << %s", resp)
         if rtn_cmd is not None and resp['cmd'] != rtn_cmd:
-            _LOGGER.error("Non matching response. Expecting %s, but got %s", rtn_cmd, resp['cmd'])
+            _LOGGER.debug("Non matching response. Expecting %s, but got %s", rtn_cmd, resp['cmd'])
             return None
         return resp
 
