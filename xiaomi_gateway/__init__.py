@@ -425,7 +425,7 @@ class XiaomiGateway(object):
         _LOGGER.debug("_send_cmd resp << %s", resp)
         if rtn_cmd is not None and resp['cmd'] != rtn_cmd:
             _LOGGER.debug("Non matching response. Expecting %s, but got %s", rtn_cmd, resp['cmd'])
-             return None
+            return None
          return resp
 
     def write_to_hub(self, sid, **kwargs):
