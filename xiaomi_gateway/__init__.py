@@ -317,6 +317,22 @@ class XiaomiGateway(object):
             return None
         return resp
 
+    def _receive_cmd_test(self, cmd, rtn_cmd=None):
+        try:
+            data, _ = self._socket.recvfrom(1024)
+        except socket.timeout:
+            _LOGGER.error("Cannot connect to Gateway")
+            return None
+        if data is None:
+            _LOGGER.error("No response from Gateway")
+            return None
+        resp = json.loads(data.decode())
+        _LOGGER.debug("_send_cmd resp << %s", resp)
+        if rtn_cmd is not None and resp['cmd'] != rtn_cmd:
+            _LOGGER.debug("Non matching response. Expecting %s, but got %s", rtn_cmd, resp['cmd'])
+             return None
+         return resp
+
     def write_to_hub(self, sid, **kwargs):
         """Send data to gateway to turn on / off device"""
         if self.key is None:
