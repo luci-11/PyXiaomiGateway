@@ -426,7 +426,7 @@ class XiaomiGateway(object):
         if rtn_cmd is not None and resp['cmd'] != rtn_cmd:
             _LOGGER.debug("Non matching response. Expecting %s, but got %s", rtn_cmd, resp['cmd'])
             return None
-         return resp
+        return resp
 
     def write_to_hub(self, sid, **kwargs):
         """Send data to gateway to turn on / off device"""
