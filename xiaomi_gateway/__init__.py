@@ -210,6 +210,19 @@ class XiaomiGateway(object):
         cmd = '{"cmd":"read","sid":"' + sid + '"}'
         resp = self._send_cmd(cmd)
 
+        _LOGGER.info('First reply >> this reply is : %s',resp)
+        
+        for count in range(1,11):
+            if resp is None or "model" not in resp or "sid" not in resp:
+                _LOGGER.info('Need another reply >> this reply is : %s',resp)
+                resp = self._receive_cmd_test(cmd, "read_ack")
+            else:
+                if "sid" in resp and resp["sid"] != sid:
+                    _LOGGER.info("Not for this device, keep searching. Sid %s found %s",sid,resp["sid"])
+                    resp = self._receive_cmd_test(cmd, "read_ack")
+                else:
+                    break
+
         if proto is None:
             proto = _get_value(resp, "proto_version") if _validate_data(resp) else None
         self.proto = '1.0' if proto is None else proto
@@ -225,8 +238,19 @@ class XiaomiGateway(object):
         cmd = '{"cmd" : "get_id_list"}' if int(self.proto[0:1]) == 1 else '{"cmd":"discovery"}'
         resp = self._send_cmd(cmd, "get_id_list_ack") if int(self.proto[0:1]) == 1 \
             else self._send_cmd(cmd, "discovery_rsp")
-        if resp is None or "token" not in resp or ("data" not in resp and "dev_list" not in resp):
-            return False
+
+
+        _LOGGER.info('First reply >> this reply is : %s',resp)
+
+        for count in range(1,11):
+            if resp is None or "token" not in resp or ("data" not in resp and "dev_list" not in resp):
+                _LOGGER.info('Need another reply >> this reply is : %s',resp)
+                resp = self._receive_cmd_test(cmd, "get_id_list_ack") 
+            else:
+                break
+
+        _LOGGER.info('Correct reply >> this reply is : %s',resp)
+
         self.token = resp['token']
         sids = []
         if int(self.proto[0:1]) == 1:
@@ -263,6 +287,20 @@ class XiaomiGateway(object):
         for sid in sids:
             cmd = '{"cmd":"read","sid":"' + sid + '"}'
             resp = self._send_cmd(cmd, "read_ack") if int(self.proto[0:1]) == 1 else self._send_cmd(cmd, "read_rsp")
+
+            _LOGGER.info('First reply >> this reply is : %s',resp)
+
+            for count in range(1,11):
+                if resp is None or "model" not in resp or "sid" not in resp:
+                    _LOGGER.info('Need another reply >> this reply is : %s',resp)
+                    resp = self._receive_cmd_test(cmd, "read_ack")
+                else:
+                    if "sid" in resp and resp["sid"] != sid:
+                        _LOGGER.info("Not for this device, keep searching. Sid %s found %s",sid,resp["sid"])
+                        resp = self._receive_cmd_test(cmd, "read_ack")
+                    else:
+                        break
+
             if not _validate_data(resp):
                 _LOGGER.error("Not a valid device. Check the mac adress and update the firmware.")
                 continue
@@ -387,7 +425,22 @@ class XiaomiGateway(object):
         """Get data from gateway"""
         cmd = '{ "cmd":"read","sid":"' + sid + '"}'
         resp = self._send_cmd(cmd, "read_ack") if int(self.proto[0:1]) == 1 else self._send_cmd(cmd, "read_rsp")
-        _LOGGER.debug("read_ack << %s", resp)
+
+        _LOGGER.info('First reply >> this reply is : %s',resp)
+
+        for count in range(1,11):
+            if resp is None or "model" not in resp or "sid" not in resp:
+                _LOGGER.info('Need another reply >> this reply is : %s',resp)
+                resp = self._receive_cmd_test(cmd, "read_ack")
+            else:
+                if "sid" in resp and resp["sid"] != sid:
+                    _LOGGER.info("Not for this device, keep searching. Sid %s found %s",sid,resp["sid"])
+                    resp = self._receive_cmd_test(cmd, "read_ack")
+                else:
+                    break
+              
+        _LOGGER.info('Correct reply >> this reply is : %s',resp)
+
         return self.push_data(resp)
 
     def push_data(self, data):
