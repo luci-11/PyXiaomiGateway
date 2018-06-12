@@ -13,6 +13,7 @@ import time
 _LOGGER = logging.getLogger(__name__)
 
 GATEWAY_MODELS = ['gateway', 'gateway.v3', 'acpartner.v3']
+registered_sids = ['']
 
 
 class XiaomiGatewayDiscovery(object):
@@ -369,8 +370,12 @@ class XiaomiGateway(object):
                         "short_id": resp["short_id"] if "short_id" in resp else 0,
                         "data": _list2map(_get_value(resp)),
                         "raw_data": resp}
-                    self.devices[device_type].append(xiaomi_device)
-                    _LOGGER.debug('Registering device %s, %s as: %s', sid, model, device_type)
+                    if  device_type+resp["sid"] not in registered_sids: 
+                        self.devices[device_type].append(xiaomi_device)
+                        _LOGGER.debug('Registering device %s, %s as: %s', sid, model, device_type)
+                        registered_sids.append(device_type+sid)
+                    else:
+                        _LOGGER.debug('Already Registered device %s - %s - %s', model, sid, device_type)
 
             if not supported:
                 if model:
