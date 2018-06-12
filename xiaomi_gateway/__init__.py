@@ -280,6 +280,7 @@ class XiaomiGateway(object):
         for _ in range(trycount):
             _LOGGER.info('Discovering Xiaomi Devices')
             if self._discover_devices():
+                time.sleep(1)
                 break
 
     def _discover_devices(self):
